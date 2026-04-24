@@ -8,13 +8,13 @@
  * Skylight's login flow spans two domains (ourskylight.com and
  * app.ourskylight.com). The session cookie is HttpOnly and SameSite,
  * which prevents it from being shared across domains programmatically.
- * 
+ *
  * In a production test environment this could be resolved with a
  * dedicated auth API endpoint or same-domain test configuration.
  * For this exercise, cy.pause() allows manual login before the test proceeds.
  */
 
-describe('Create and Assign a Task', () => {
+describe('Mark a Task as Complete', () => {
   beforeEach(() => {
     cy.visit('https://ourskylight.com/welcome')
     cy.findByRole('button', { name: /sign in/i }).realClick()
@@ -29,8 +29,8 @@ describe('Create and Assign a Task', () => {
     // cy.contains('Continue to Skylight').click()
   })
 
-it('should mark an existing task as complete', () => {
-      // Dismiss optional "Got it" onboarding modal if present
+  it('should mark an existing task as complete', () => {
+    // Dismiss optional "Got it" onboarding modal if present
     cy.get('body').then(($body) => {
       if ($body.find('button:contains("Got it")').length > 0) {
         cy.findByRole('button', { name: /got it/i }).click()
@@ -48,15 +48,21 @@ it('should mark an existing task as complete', () => {
       }
     })
 
+    // Intercept the completion request before triggering it
     cy.intercept('PUT', '**/chores/*/completions').as('completeTask')
-  // Find our task and click its checkbox
-  //cy.contains('Clean room').click({ scrollBehavior: 'center' })
-  cy.contains('Clean room').then(($el) => {
-  $el[0].scrollIntoView({ block: 'center', behavior: 'instant' })
-})
-cy.contains('Clean room').closest(':has([role="checkbox"])').find('[role="checkbox"]').click()
 
-  // Verify the checkbox class has changed to the checked state
-cy.wait('@completeTask').its('response.statusCode').should('be.oneOf', [200, 204])
-})
+    // Scroll the "Clean room" task into view within its scrollable container
+    cy.contains('Clean room').then(($el) => {
+      $el[0].scrollIntoView({ block: 'center', behavior: 'instant' })
+    })
+
+    // Find the task row and click its checkbox
+    cy.contains('Clean room')
+      .closest(':has([role="checkbox"])')
+      .find('[role="checkbox"]')
+      .click()
+
+    // Verify the API confirmed the task was marked complete
+    cy.wait('@completeTask').its('response.statusCode').should('be.oneOf', [200, 204])
+  })
 })

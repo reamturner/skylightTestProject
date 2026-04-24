@@ -23,3 +23,13 @@ Cypress.Commands.add('selectFirstFamilyMember', () => {
     .first()
     .click()
 })
+
+// cypress/support/commands.ts
+Cypress.Commands.add('scrollToTask', (taskTitle: string) => {
+  cy.contains(taskTitle, { timeout: 10000 })
+    .should('exist')
+    .then(($el) => {
+      $el[0].scrollIntoView({ block: 'center', behavior: 'instant' })
+    })
+  cy.contains(taskTitle).should('be.visible')
+})

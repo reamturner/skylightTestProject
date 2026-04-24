@@ -3,6 +3,8 @@
 ### Testing Scope
 Explored the Tasks feature of the Skylight desktop app as a primary parent managing chores and routines for a family of four.
 
+Videos of bugs can be found in the Google Drive folder: [Skylight Bugs](https://drive.google.com/drive/folders/1ghWxm1qHKgYFnXMQSJfnKPOzTh190r93?usp=share_link)
+
 ---
 
 ### Bug 1: Submission can be attempted before all required fields are met
@@ -49,8 +51,29 @@ See Video attachment in email for `SkylightBug#1`
 See Video attachment in email for `SkylightBug#2`
 
 ---
+### Bug 3: Unhandled TypeError after chore creation - found via automated test
+**Browsers:** Chrome Version 147.0.7727.101
 
-### Bug 3: Task Checkbox Missing `aria-checked` Attribute (Accessibility)
+**Severity:** Medium 
+
+**Description:** Task creation succeeds visually, but a silent error is thrown and reported to Sentry on every chore save. This creates noise in error monitoring and suggests a broken assumption in the response handler that may cause downstream features (analytics, counters, achievement logic) to silently fail.
+
+**Steps to Reproduce:**
+1. Log into the app
+2. Navigate to Tasks
+3. Click Add Task
+4. Add a title for the task
+5. Select a Profile
+6. Click Add
+7. Open browser DevTools Console (or observe Sentry logs).
+
+**Expected:** The task saves successfully and the response is processed without errors.
+
+**Actual:** After successfully creating a chore via the Add Task form, the Skylight app throws an unhandled promise rejection: `TypeError: Cannot read properties of undefined (reading 'numChoresCreated')`. The POST to `/api/frames/{frameId}/chores/create_multiple` returns 200 and the task appears in the list as expected, but the client-side response handler fails when attempting to read `numChoresCreated` on an undefined object. The error is captured by Sentry.
+
+---
+
+### Bug 4: Task Checkbox Missing `aria-checked` Attribute (Accessibility)
 **Browsers:** Chrome Version 147.0.7727.101 
 
 **Severity:** Medium
@@ -69,28 +92,27 @@ See Video attachment in email for `SkylightBug#2`
 
 ---
 
-### Bug 4: 
+### Bug 5: Profile list flickers and shows artifacts when resizing browser window
 **Browsers:** Chrome Version 147.0.7727.101, Safari Version 26.2 (21623.1.14.11.9)
 
 **Severity:** Medium
 
-**Description:** Strange artifact and `All Profiles` list appear when shrinking browser window, 
-when user can still horizontally scroll to see individual profiles.
+**Description:** Strange artifact and `All Profiles` list appear when shrinking browser window, user can still horizontally scroll to see individual profiles.
 
 **Steps to Reproduce:**
 1. Navigate to Tasks
 2. Shrink the browser window
 
-**Expected:** Resizing should be smooth and no artifacts should be observed. If `All Profiles` is expected, regular profiles should be hidden from view until screen is expanded and `All Profiles` is hidden again.
+**Expected:** Resizing should be smooth and no artifacts should be observed. If `All Profiles` is expected, regular profiles should be hidden from view until the screen is expanded and `All Profiles` is hidden again.
 
 **Actual:** On Chrome, transition is not smooth. Profiles flicker in and out as `All Profiles` comes and goes.
-On Safari, transition is jumpier than Chrome. `All Profiles` Profile is viewed as well as expected profiles.
+On Safari, transition is jumpier than Chrome. `All Profiles` is viewed as well as individual profiles.
 
-See Video attachments in email for `SkylightBug#4_Safari` and `SkylightBug#4_Chrome`
+See Video attachments in email for `SkylightBug#5_Safari` and `SkylightBug#5_Chrome`
 
 ---
 
-### Bug 5: 
+### Bug 6: Dark Mode / Light Mode transition requires page refresh to fully apply
 **Browsers:** Chrome Version 147.0.7727.101, Safari Version 26.2 (21623.1.14.11.9)
 
 **Severity:** Medium
@@ -105,20 +127,19 @@ See Video attachments in email for `SkylightBug#4_Safari` and `SkylightBug#4_Chr
 
 **Actual:** Transition is slow, and contrast updates are not immediate. Requires a refresh for all text contrast to occur.
 
-See Video attachments in email for `SkylightBug#5_Safari` and `SkylightBug#5_Chrome`
+See Video attachments in email for `SkylightBug#6_Safari` and `SkylightBug#6_Chrome`
 
 ---
 
-### Bug 6: 
+### Bug 7: Task creation form pre-populates with data from previous task
 **Browsers:** Chrome Version 147.0.7727.101, Safari Version 26.2 (21623.1.14.11.9)
 
 **Severity:** Low
 
 **Description:** When creating subsequent tasks, some fields are pre-populated with details from the last task created.
 
-*Precondition:* Just completed adding a new task to the task box.
-
 **Steps to Reproduce:**
+*Precondition:* Just completed adding a new task to the task box.
 1. Navigate to Tasks
 2. Click Add Task
 3. View pre-filled data
@@ -127,26 +148,4 @@ See Video attachments in email for `SkylightBug#5_Safari` and `SkylightBug#5_Chr
 
 **Actual:** The profile and `Save to task box` are already selected upon entering the task creation form.
 
-See Video attachment in email for `SkylightBug#6`
-
----
-
-### Bug 7: Unhandled TypeError after chore creation - found via automated test
-**Browsers:** Chrome Version 147.0.7727.101
-
-**Severity:** Medium 
-
-**Description:** Task creation succeeds visually, but a silent error is thrown and reported to Sentry on every chore save. This creates noise in error monitoring and suggests a broken assumption in the response handler that may cause downstream features (analytics, counters, achievement logic) to silently fail.
-
-**Steps to Reproduce:**
-1. Log into the app
-2. Navigate to Tasks
-3. Click Add Task
-3. Add Title for task
-4. Select a Profile
-6. Click Add
-7. Open browser DevTools Console (or observe Sentry logs).
-
-**Expected:** Task saves successfully and the response is processed without errors.
-
-**Actual:** After successfully creating a chore via the Add Task form, the Skylight app throws an unhandled promise rejection: `TypeError: Cannot read properties of undefined (reading 'numChoresCreated')`. The POST to `/api/frames/{frameId}/chores/create_multiple` returns 200 and the task appears in the list as expected, but the client-side response handler fails when attempting to read `numChoresCreated` on an undefined object. The error is captured by Sentry.
+See Video attachment in email for `SkylightBug#7`
