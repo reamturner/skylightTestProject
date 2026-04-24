@@ -78,21 +78,6 @@ npx cypress open
 
 Select **E2E Testing**, choose a browser, then click a spec file to run it.
 
-
-**Run tests headlessly:**
-
-```bash
-npx cypress run
-```
-
----
-
-### Run a specific test
-
-```bash
-npx cypress run --spec "cypress/e2e/createTask.cy.ts"
-```
-
 ### What to expect during a run
 
 Each test begins by navigating to the Skylight login page. Because authentication spans two domains (`ourskylight.com` and `app.ourskylight.com`), the session cookie cannot be shared across them programmatically. The test pauses at `cy.pause()` after clicking "Sign In".
