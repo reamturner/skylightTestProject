@@ -1,12 +1,3 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
 import '@testing-library/cypress/add-commands'
 import 'cypress-real-events'
 
@@ -22,14 +13,4 @@ Cypress.Commands.add('selectFirstFamilyMember', () => {
     .parents('div[id]')
     .first()
     .click()
-})
-
-// cypress/support/commands.ts
-Cypress.Commands.add('scrollToTask', (taskTitle: string) => {
-  cy.contains(taskTitle, { timeout: 10000 })
-    .should('exist')
-    .then(($el) => {
-      $el[0].scrollIntoView({ block: 'center', behavior: 'instant' })
-    })
-  cy.contains(taskTitle).should('be.visible')
 })
